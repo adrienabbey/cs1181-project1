@@ -8,7 +8,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
     // Variables:
     private static Random rng = new Random(); // used for random number generation
-    // Each chromosome has a unique ArrayList of items.
+    // Each chromosome needs a unique ArrayList of items:
     private ArrayList<Item> itemList;
 
     // Constructors:
@@ -23,7 +23,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // is set to true or false.
 
         // When passed an item list (which should be always), create a new ArrayList
-        // containing those items:
+        // to contain those items:
         itemList = new ArrayList<Item>();
 
         // Add each item to the new item list as a deep clone:
@@ -32,13 +32,12 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // making deep copies of ArrayLists, but only one actually worked. Source:
         // https://www.javaprogramto.com/2020/04/java-arraylist-clone-deep-copy.html
         for (Item item : items) {
-            Item itemCopy = new Item(item);
-            itemList.add(itemCopy);
+            itemList.add(new Item(item));
         }
 
         // Randomly set each item's inclusion:
-        for (int i = 0; i < this.itemList.size(); i++) {
-            this.itemList.get(i).setIncluded(rng.nextBoolean());
+        for (int i = 0; i < itemList.size(); i++) {
+            itemList.get(i).setIncluded(rng.nextBoolean());
         }
     }
 
@@ -58,20 +57,14 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // inclusion status selected randomly from one of their parents.
 
         // Procreation time:
-        // TODO: verify this works! I might already be setting items in the loop below.
         // A new chromosome needs an ArrayList of Items in order to properly procreate:
-        Chromosome childChromosome = new Chromosome(this.itemList);
+        Chromosome childChromosome = new Chromosome(itemList);
 
         // This form of procreation is genderless and creates a new inventory of items
         // that spontaneously came into existance, because reasons.
 
-        // It's probably safe to assume all chromosomes are the same length, because I
-        // wrote this code and I'm incapable of making such mistakes, hopefully. As
-        // such, I'm using 'this' chromosome's length, as a means to test this theory,
-        // as I'm not infallible.
-
         // For each item in the new chromosome:
-        for (int i = 0; i < this.itemList.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // Randomly select a parent:
             if (rng.nextBoolean()) {
                 // if true, use this chromosome:
@@ -82,7 +75,8 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
             }
         }
 
-        // Return to sender:
+        // Return to sender. This miracle child pops into existance with a backpack of
+        // items, no child-rearing required:
         return childChromosome;
     }
 
@@ -99,17 +93,17 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // fleeing from.
 
         // For each item in the chromosome:
-        for (int i = 0; i < this.itemList.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // Only affect a change 10% of the time (rng returns 0 to 9, and I feel like
             // only accepting 1):
             if (rng.nextInt(10) == 1) {
                 // Mutate the given item:
-                if (this.itemList.get(i).isIncluded()) {
+                if (itemList.get(i).isIncluded()) {
                     // If included, then exclude it:
-                    this.itemList.get(i).setIncluded(false);
+                    itemList.get(i).setIncluded(false);
                 } else {
                     // If excluded, then include it:
-                    this.itemList.get(i).setIncluded(true);
+                    itemList.get(i).setIncluded(true);
                 }
             }
         }
@@ -125,14 +119,14 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         double weight = 0;
 
         // For each item in this person's backpack, err, chromosome?:
-        for (int i = 0; i < this.itemList.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // Add the item's worth, but only if it's included:
-            if (this.itemList.get(i).isIncluded()) {
-                value += this.itemList.get(i).getValue();
+            if (itemList.get(i).isIncluded()) {
+                value += itemList.get(i).getValue();
             }
             // Add the item's weight, but only if it's included:
-            if (this.itemList.get(i).isIncluded()) {
-                weight += this.itemList.get(i).getWeight();
+            if (itemList.get(i).isIncluded()) {
+                weight += itemList.get(i).getWeight();
             }
         }
 
@@ -147,7 +141,6 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
     }
 
     // Overrides:
-    @Override
     public int compareTo(Chromosome other) {
         // Returns -1 if 'this' chromosome's fitness is greater than the 'other's
         // fitness, +1 if 'this' chromosome's fitness is less than the 'other' one's,
@@ -166,7 +159,6 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         }
     }
 
-    @Override
     public String toString() {
         // Displays the name, weight, and value of all items in this chromosome whose
         // included value is true, followed by the fitness of this chromosome.
@@ -174,16 +166,16 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         String returnString = "";
 
         // For each item in this chromosome:
-        for (int i = 0; i < this.itemList.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // If the given item is included:
-            if (this.itemList.get(i).isIncluded()) {
+            if (itemList.get(i).isIncluded()) {
                 // Append the item's description (using the Item's overriden toString method):
-                returnString += this.itemList.get(i).toString() + "\n";
+                returnString += itemList.get(i).toString() + "\n";
             }
         }
 
         // Also append this chromosome's fitness:
-        returnString += ("Fitness: " + this.getFitness() + "\n");
+        returnString += ("Fitness: " + getFitness() + "\n");
 
         // Return the finished string:
         return returnString;

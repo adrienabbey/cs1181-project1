@@ -16,6 +16,19 @@ Running the Genetic Algorithm:
     back into the population.
  7. Repeat steps 2 through 6 twenty times.
  8. Sort the population and display the fittest individual to the console.
+
+Notes:
+ - I really struggled for a bit with copying the ArrayList of items when 
+   creating new chromosomes.  After realizing that I was not properly creating 
+   a new ArrayList each time, I set about trying to fix that.  Eventually I 
+   realized that I not only needed a new ArrayList for each chromosome's 
+   inventory, but also needed to create proper deep copies of each item in 
+   that list as well.
+ - TODO: There's a second, longer list of items that I could try out.  
+   However, using it with a 10 lb limit with a 50% chance for each item will 
+   almost always lead all new Chromosomes to have zero fitness values.  Using 
+   this list will likely need adjustments to those chance values to be 
+   effective.
 */
 
 import java.io.File;
@@ -27,8 +40,6 @@ import java.util.Scanner;
 public class GeneticAlgorithm {
 
     // Variables:
-    // Placing the variables here makes it easier to find and change them as
-    // desired.
     private static String filename = "items.txt";
     private static int populationSize = 10;
 
@@ -63,7 +74,7 @@ public class GeneticAlgorithm {
             // such as the blank line at the end of the file. Don't try to add a blank line
             // as an item.
 
-            // If the split String Array length is 3 like it should be:
+            // If the resulting String Array length is proper (to avoid errors):
             if (splitString.length == 3) {
                 // Add the new item to the ArrayList:
                 itemArray.add(new Item(splitString[0].trim(), Double.parseDouble(splitString[1].trim()),
@@ -89,7 +100,7 @@ public class GeneticAlgorithm {
         // For each population member:
         for (int i = 0; i < populationSize; i++) {
             // Create a new person, err backpack, err chromosome:
-            // Note: this method automatically randomize each Item's inclusion.
+            // Note: this method automatically randomizes each Item's inclusion.
             populationArray.add(new Chromosome(items));
         }
 
@@ -104,21 +115,11 @@ public class GeneticAlgorithm {
         // Load the file's contents into an Item array:
         ArrayList<Item> itemArray = readData(filename);
 
-        // TEST: Print out the itemArray:
-        // for (Item item : itemArray) {
-        // System.out.println(item);
-        // }
-
         // Step 1:
         // Create the initial population:
         ArrayList<Chromosome> currentPopulation = initialPopulation(itemArray, populationSize);
 
-        // TEST: Print out the new generation:
-        for (int i = 0; i < currentPopulation.size(); i++) {
-            System.out.println(currentPopulation.get(i).toString());
-        }
-
-        // Apply the Genetic Algorithm to these victims 20 times:
+        // Step 7: Repeat steps 2 through 6 twenty times. We're monsters like that.
         for (int i = 0; i < 20; i++) {
             // Step 2:
             // Create a NEW ArrayList containing the current population:
@@ -162,11 +163,6 @@ public class GeneticAlgorithm {
             // sort by fitness, we can simply use collection sorting:
             Collections.sort(nextGeneration);
 
-            // TEST: Print out the sorted list:
-            // for (Chromosome c : nextGeneration) {
-            // System.out.println(c);
-            // }
-
             // Step 6: Clear out the current population and add the top ten of the next
             // generation back into the population:
 
@@ -177,8 +173,6 @@ public class GeneticAlgorithm {
             for (int j = 0; j < 10; j++) {
                 currentPopulation.add(nextGeneration.get(j));
             }
-
-            // Step 7: Repeat steps 2 through 6 twenty times. We're monsters like that.
         }
 
         // Step 8: Sort the population and display the fittest individual to the

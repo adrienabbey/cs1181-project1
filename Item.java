@@ -12,7 +12,7 @@ public class Item {
     // Constructor:
     public Item(String name, double weight, int value) {
         // Initializes the Item's fields to the values that are passed in.
-        // The 'included' field is initialized to false.
+        // The 'included' field is initialized to false by default.
 
         this.name = name;
         this.weight = weight;
@@ -22,8 +22,7 @@ public class Item {
     // Copy Constructor:
     public Item(Item other) {
         // Initializes this item's fields to be the same as the other item's
-        // TODO: FIX THIS, IT'S A SHALLOW COPY, NOT A DEEP COPY! Or is it?
-        this.name = new String(other.name);
+        this.name = other.name;
         this.weight = other.weight;
         this.value = other.value;
     }
