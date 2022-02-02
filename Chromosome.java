@@ -7,7 +7,8 @@ import java.util.Random;
 public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome> {
 
     // Variables:
-    private static Random rng; // used for random number generation
+    private static Random rng = new Random(); // used for random number generation
+    private ArrayList<Item> itemList; // Each chromosome has a unique ArrayList of items.
 
     // Constructors:
     public Chromosome() {
@@ -22,15 +23,13 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
         // When passed an item list, create a new person, err chromosome with a random
         // inventory in their backpack, err chromosome.
-
-        // Note: I first tried to just use this.add(items). Fortunately, VSC's quickfix
-        // recommended I use .addAll instead.
-        this.addAll(items);
+        itemList = new ArrayList<Item>();
+        itemList.addAll(items);
 
         // For each item in this chromosome:
-        for (int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // Randomly set the item's inclusion:
-            this.get(i).setIncluded(rng.nextBoolean());
+            itemList.
         }
     }
 
@@ -50,7 +49,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // inclusion status selected randomly from one of their parents.
 
         // Procreation time:
-        // TODO: verify this works!  I might already be setting items in the loop below.
+        // TODO: verify this works! I might already be setting items in the loop below.
         // A new chromosome needs an ArrayList of Items in order to properly procreate:
         Chromosome childChromosome = new Chromosome(this);
 
@@ -63,14 +62,14 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         // as I'm not infallible.
 
         // For each item in the new chromosome:
-        for (int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < itemList.size(); i++) {
             // Randomly select a parent:
             if (rng.nextBoolean()) {
                 // if true, use this chromosome:
-                childChromosome.set(i, this.get(i));
+                childChromosome.itemList.get(i).setIncluded(this.itemList.get(i).isIncluded());
             } else {
                 // if false, use other chromosome:
-                childChromosome.set(i, other.get(i));
+                childChromosome.itemList.get(i).setIncluded(other.itemList.get(i).isIncluded());
             }
         }
 
@@ -117,15 +116,19 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         double weight = 0;
 
         // For each item in this person's backpack, err, chromosome?:
-        for (Item item : this) {
-            // Add the item's worth:
-            value += item.getValue();
-            // Add the item's weight:
-            weight += item.getWeight();
+        for (int i = 0; i < this.size(); i++) {
+            // Add the item's worth, but only if it's included:
+            if (this.get(i).isIncluded()) {
+                value += this.get(i).getValue();
+            }
+            // Add the item's weight, but only if it's included:
+            if (this.get(i).isIncluded()) {
+                weight += this.get(i).getWeight();
+            }
         }
 
         // If the total weight is greater than 10:
-        if (weight > 10) {
+        if (weight > 10.0) {
             // ...then this chromosome's fitness is zero:
             return 0;
         } else {

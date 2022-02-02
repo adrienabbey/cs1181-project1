@@ -52,6 +52,6 @@ public class Item {
     // Override: toString method:
     public String toString() {
         // Displays the item in the form <name> (<weight> lbs, $<value>)
-        return (name + "(" + weight + " lbs, $" + value);
+        return (name + "(" + weight + " lbs, $" + value +")");
     }
 }

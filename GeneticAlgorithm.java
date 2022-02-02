@@ -21,7 +21,7 @@ Running the Genetic Algorithm:
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-// import java.util.Random;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class GeneticAlgorithm {
@@ -31,8 +31,6 @@ public class GeneticAlgorithm {
     // desired.
     private static String filename = "items.txt";
     private static int populationSize = 10;
-    // TODO: Remove this?
-    // private static Random rng; // Randomness is useful here.
 
     public static ArrayList<Item> readData(String filename) throws FileNotFoundException {
         // Reads in a data file with the format shown below and creates and returns an
@@ -92,7 +90,8 @@ public class GeneticAlgorithm {
         for (int i = 0; i < populationSize; i++) {
             // Create a new person, err backpack, err chromosome:
             // Note: this method automatically randomize each Item's inclusion.
-            populationArray.add(new Chromosome(items));
+            Chromosome newPerson = new Chromosome(items);
+            populationArray.add(newPerson);
         }
 
         // Return the ArrayList:
@@ -106,25 +105,87 @@ public class GeneticAlgorithm {
         // Load the file's contents into an Item array:
         ArrayList<Item> itemArray = readData(filename);
 
+        // TEST: Print out the itemArray:
+        // for (Item item : itemArray) {
+        // System.out.println(item);
+        // }
+
         // Step 1:
         // Create the initial population:
         ArrayList<Chromosome> currentPopulation = initialPopulation(itemArray, populationSize);
 
-        // Loop 20 times:
+        // TEST: Print out the new generation:
+        for (int i = 0; i < currentPopulation.size(); i++) {
+            System.out.println(currentPopulation.get(i));
+        }
+
+        // Apply the Genetic Algorithm to these victims 20 times:
         for (int i = 0; i < 20; i++) {
             // Step 2:
-            // Add the current population to the next generation:
-            ArrayList<Chromosome> nextGeneration = currentPopulation;
+            // Create a NEW ArrayList containing the current population:
+            ArrayList<Chromosome> nextGeneration = new ArrayList<>(currentPopulation);
 
             // Step 3:
             // Randomly pair off individuals and perform a crossover to create a child and
             // add it to the next generation as well.
 
             // Each child has two different genderless parents. I must be careful, as
-            // carelessness could lead to individuals procreating with themselves otherwise.
+            // carelessness could lead to individuals procreating with themselves, which we
+            // probably do not want.
 
             // Let's assume that each individual in the currentPopulation procreates no
             // more than once each generation, because otherwise this will get real messy.
+
+            // Shuffle the population list, because random partners are desirable somehow:
+            Collections.shuffle(currentPopulation);
+
+            // Begin random, mandated procreation:
+            for (int j = 0; j < currentPopulation.size() / 2; j++) {
+                // Since the population has been shuffled, we'll just go down the list in
+                // pairs. Add new children to the nextGeneration:
+                nextGeneration.add(currentPopulation.get(j * 2).crossover(currentPopulation.get(j * 2 + 1)));
+            }
+
+            // Step 4: Randomly choose ten percent of the individuals in the next generation
+            // and expose them to mutation.
+
+            // For every individual in the nextGeneration:
+            for (Chromosome individual : nextGeneration) {
+                // Note: the mutate method already applies mutations only 10% of the time, so we
+                // can pass the whole list:
+                individual.mutate();
+            }
+
+            // Step 5: Sort the individuals in the next generation according to their
+            // fitness.
+
+            // Note: Since the Chromosome class already overrides the compareTo method to
+            // sort by fitness, we can simply use collection sorting:
+            Collections.sort(nextGeneration);
+
+            // TEST: Print out the sorted list:
+            for (Chromosome c : nextGeneration) {
+                System.out.println(c);
+            }
+
+            // Step 6: Clear out the current population and add the top ten of the next
+            // generation back into the population:
+
+            // Genocide is easy:
+            currentPopulation.clear();
+
+            // Add the top ten of the next generation back into the current population:
+            for (int j = 0; j < 10; j++) {
+                currentPopulation.add(nextGeneration.get(j));
+            }
+
+            // Step 7: Repeat steps 2 through 6 twenty times. We're monsters like that.
         }
+
+        // Step 8: Sort the population and display the fittest individual to the
+        // console:
+        Collections.sort(currentPopulation);
+        // Since the Chromosome class has a toString override method, this is easy.
+        System.out.println(currentPopulation.get(0));
     }
 }
