@@ -22,7 +22,8 @@ public class Item {
     // Copy Constructor:
     public Item(Item other) {
         // Initializes this item's fields to be the same as the other item's
-        this.name = other.name;
+        // TODO: FIX THIS, IT'S A SHALLOW COPY, NOT A DEEP COPY! Or is it?
+        this.name = new String(other.name);
         this.weight = other.weight;
         this.value = other.value;
     }
@@ -52,6 +53,6 @@ public class Item {
     // Override: toString method:
     public String toString() {
         // Displays the item in the form <name> (<weight> lbs, $<value>)
-        return (name + "(" + weight + " lbs, $" + value +")");
+        return (name + "(" + weight + " lbs, $" + value + ")");
     }
 }

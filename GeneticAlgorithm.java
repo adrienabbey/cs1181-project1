@@ -90,8 +90,7 @@ public class GeneticAlgorithm {
         for (int i = 0; i < populationSize; i++) {
             // Create a new person, err backpack, err chromosome:
             // Note: this method automatically randomize each Item's inclusion.
-            Chromosome newPerson = new Chromosome(items);
-            populationArray.add(newPerson);
+            populationArray.add(new Chromosome(items));
         }
 
         // Return the ArrayList:
@@ -116,7 +115,7 @@ public class GeneticAlgorithm {
 
         // TEST: Print out the new generation:
         for (int i = 0; i < currentPopulation.size(); i++) {
-            System.out.println(currentPopulation.get(i));
+            System.out.println(currentPopulation.get(i).toString());
         }
 
         // Apply the Genetic Algorithm to these victims 20 times:
@@ -164,9 +163,9 @@ public class GeneticAlgorithm {
             Collections.sort(nextGeneration);
 
             // TEST: Print out the sorted list:
-            for (Chromosome c : nextGeneration) {
-                System.out.println(c);
-            }
+            // for (Chromosome c : nextGeneration) {
+            // System.out.println(c);
+            // }
 
             // Step 6: Clear out the current population and add the top ten of the next
             // generation back into the population:
