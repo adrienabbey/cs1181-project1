@@ -18,6 +18,10 @@ Running the Genetic Algorithm:
  8. Sort the population and display the fittest individual to the console.
 
 Notes:
+ - Our class lectures recently went into more detail about try/catch exception 
+   handling and its importance, but the PDF defines classes with throws with 
+   explicit instructions to conform to that specification exactly.  As such, I 
+   won't try to implement try/catch blocks in this project.
  - I really struggled for a bit with copying the ArrayList of items when 
    creating new chromosomes.  After realizing that I was not properly creating 
    a new ArrayList each time, I set about trying to fix that.  Eventually I 
@@ -28,7 +32,9 @@ Notes:
    However, using it with a 10 lb limit with a 50% chance for each item will 
    almost always lead all new Chromosomes to have zero fitness values.  Using 
    this list will likely need adjustments to those chance values to be 
-   effective.
+   effective.  To do this, I'll likely need to implement variables to easily 
+   switch between the two.  I could also increase the population size and 
+   generational count too.
 */
 
 import java.io.File;
