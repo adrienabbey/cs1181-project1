@@ -28,13 +28,10 @@ Notes:
    realized that I not only needed a new ArrayList for each chromosome's 
    inventory, but also needed to create proper deep copies of each item in 
    that list as well.
- - TODO: There's a second, longer list of items that I could try out.  
-   However, using it with a 10 lb limit with a 50% chance for each item will 
-   almost always lead all new Chromosomes to have zero fitness values.  Using 
-   this list will likely need adjustments to those chance values to be 
-   effective.  To do this, I'll likely need to implement variables to easily 
-   switch between the two.  I could also increase the population size and 
-   generational count too.
+ - I added a few variables to make it easy to try different options.  
+   Specifically, the filename, populationSize, and generations variables at 
+   the top of the GeneticAlgorithm class, as well as a maxWeight variable at 
+   the top of the Chromosome class.
 */
 
 import java.io.File;
@@ -46,12 +43,20 @@ import java.util.Scanner;
 public class GeneticAlgorithm {
 
     // Variables:
-    private static String filename = "items.txt";
-    private static int populationSize = 10;
+    // Note: These variables are provided here for easy adjustments. For example,
+    // this makes it easy to change to the included more_items.txt list and adjust
+    // variables to provide more useful results with that list.
+    private static String filename = "items.txt"; // default: items.txt
+    private static int populationSize = 10; // default: 10
+    private static int generations = 20; // default: 20
+    public static double maxWeight = 10.0; // default: 10.0
 
     public static ArrayList<Item> readData(String filename) throws FileNotFoundException {
         // Reads in a data file with the format shown below and creates and returns an
         // ArrayList of Item objects.
+
+        // Note: The PDF explicitly states I should throw the FileNotFound exception
+        // here.
 
         // File format:
         // item1_label, item1_weight, item1_value
@@ -62,6 +67,8 @@ public class GeneticAlgorithm {
 
         // Create a File object that points to the filename:
         File file = new File(filename);
+
+        // TODO: Perhaps use a try-catch block to handle missing files and other exceptions?
 
         // Create a Scanner object to read from the file:
         Scanner fileScanner = new Scanner(file);
@@ -77,8 +84,7 @@ public class GeneticAlgorithm {
             String[] splitString = nextLine.split(",");
 
             // There's a possibility that the split String is not providing a valid input,
-            // such as the blank line at the end of the file. Don't try to add a blank line
-            // as an item.
+            // such as a blank line at the end of the file.
 
             // If the resulting String Array length is proper (to avoid errors):
             if (splitString.length == 3) {
@@ -118,6 +124,8 @@ public class GeneticAlgorithm {
         // Reads the data about the items in a file called 'items.txt' and performs the
         // steps described in the "Running the Genetic Algorithm" section above.
 
+        // Note: The PDF explicitly states I should throw FileNotFoundExceptions here.
+
         // Load the file's contents into an Item array:
         ArrayList<Item> itemArray = readData(filename);
 
@@ -126,7 +134,8 @@ public class GeneticAlgorithm {
         ArrayList<Chromosome> currentPopulation = initialPopulation(itemArray, populationSize);
 
         // Step 7: Repeat steps 2 through 6 twenty times. We're monsters like that.
-        for (int i = 0; i < 20; i++) {
+        // NOTE: I'm using a "generations" variable here to make it easy to adjust:
+        for (int i = 0; i < generations; i++) {
             // Step 2:
             // Create a NEW ArrayList containing the current population:
             ArrayList<Chromosome> nextGeneration = new ArrayList<>(currentPopulation);
@@ -155,11 +164,20 @@ public class GeneticAlgorithm {
             // Step 4: Randomly choose ten percent of the individuals in the next generation
             // and expose them to mutation.
 
-            // For every individual in the nextGeneration:
-            for (Chromosome individual : nextGeneration) {
-                // Note: the mutate method already applies mutations only 10% of the time, so we
-                // can pass the whole list:
-                individual.mutate();
+            // The instructions state that 10% of the population should mutate. I'm reading
+            // this as to mean I should randomly select 10% of the population, rather than
+            // randomly mutating individuals 10% of thet time.
+
+            // Shuffle the next generation in preparation for mandated mutations:
+            Collections.shuffle(nextGeneration);
+
+            // Don't think of mutation as necessarily being a bad thing. Every rare often
+            // some beneficial mutation happens.
+
+            // For the first 10% of the shuffled population:
+            for (int j = 0; j < nextGeneration.size() / 10; j++) {
+                // Apply mutation directly to the chromosome:
+                nextGeneration.get(j).mutate();
             }
 
             // Step 5: Sort the individuals in the next generation according to their
@@ -172,11 +190,12 @@ public class GeneticAlgorithm {
             // Step 6: Clear out the current population and add the top ten of the next
             // generation back into the population:
 
-            // Genocide is easy:
+            // Genocide is depressingly easy:
             currentPopulation.clear();
 
             // Add the top ten of the next generation back into the current population:
-            for (int j = 0; j < 10; j++) {
+            // NOTE: Instead of the top 10, I'm going to use the population size instead/
+            for (int j = 0; j < populationSize; j++) {
                 currentPopulation.add(nextGeneration.get(j));
             }
         }

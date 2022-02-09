@@ -12,11 +12,12 @@ public class Item {
     // Constructor:
     public Item(String name, double weight, int value) {
         // Initializes the Item's fields to the values that are passed in.
-        // The 'included' field is initialized to false by default.
+        // The 'included' field is initialized to false.
 
         this.name = name;
         this.weight = weight;
         this.value = value;
+        this.included = false;
     }
 
     // Copy Constructor:
@@ -25,6 +26,7 @@ public class Item {
         this.name = other.name;
         this.weight = other.weight;
         this.value = other.value;
+        this.included = other.included;
     }
 
     // Getters:
@@ -52,6 +54,6 @@ public class Item {
     // Override: toString method:
     public String toString() {
         // Displays the item in the form <name> (<weight> lbs, $<value>)
-        return (name + "(" + weight + " lbs, $" + value + ")");
+        return (name + " (" + weight + " lbs, $" + value + ")");
     }
 }

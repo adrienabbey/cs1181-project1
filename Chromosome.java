@@ -7,30 +7,23 @@ import java.util.Random;
 public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome> {
 
     // Variables:
+    private ArrayList<Item> itemList; // each chromosome needs a unique ArrayList of items
     private static Random rng = new Random(); // used for random number generation
-    // Each chromosome needs a unique ArrayList of items:
-    private ArrayList<Item> itemList;
 
     // Constructors:
     public Chromosome() {
         // This no-arg constructor can be empty.
-        // Note to self: This class extends ArrayList.
     }
 
     public Chromosome(ArrayList<Item> items) {
-        // Adds a copy of each of the item in the ArrayList passed in to this
+        // Adds a copy of each of the items in the ArrayList passed in to this
         // Chromosome. Uses a random number to decide whether each item's included field
         // is set to true or false.
 
-        // When passed an item list (which should be always), create a new ArrayList
-        // to contain those items:
+        // Create a new ArrayList to contain the items:
         itemList = new ArrayList<Item>();
 
-        // Add each item to the new item list as a deep clone:
-        // Note: This was WAY harder than it should've been. I banged my head against
-        // this problem for far too long. There's many different pages talking about
-        // making deep copies of ArrayLists, but only one actually worked. Source:
-        // https://www.javaprogramto.com/2020/04/java-arraylist-clone-deep-copy.html
+        // Add each item to the new item list as a new, unique object (deep copy):
         for (Item item : items) {
             itemList.add(new Item(item));
         }
@@ -50,7 +43,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
         // Note: While the description of a crossover in the PDF uses a random number
         // between 1 and 10 and bases mutations off that, I'll use a random boolean here
-        // instead, as mutation is a separate method in this class.
+        // instead, as mutation is handled by a separate method in this class.
 
         // Each parent's "chromosome" is a list of items and their inclusion status. The
         // child's "chromosome" will be generated from their parents, with each item's
@@ -120,18 +113,17 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
         // For each item in this person's backpack, err, chromosome?:
         for (int i = 0; i < itemList.size(); i++) {
-            // Add the item's worth, but only if it's included:
+            // Add the item's weight and value, but only if it's included:
             if (itemList.get(i).isIncluded()) {
                 value += itemList.get(i).getValue();
-            }
-            // Add the item's weight, but only if it's included:
-            if (itemList.get(i).isIncluded()) {
                 weight += itemList.get(i).getWeight();
             }
         }
 
         // If the total weight is greater than 10:
-        if (weight > 10.0) {
+        // Note: this variable is defined at the top of the GeneticAlogrithm class to
+        // make it easy to adjust values as desired.
+        if (weight > GeneticAlgorithm.maxWeight) {
             // ...then this chromosome's fitness is zero:
             return 0;
         } else {
