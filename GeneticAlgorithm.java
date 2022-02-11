@@ -32,6 +32,7 @@ Notes:
    Specifically, the filename, populationSize, and generations variables at 
    the top of the GeneticAlgorithm class, as well as a maxWeight variable at 
    the top of the Chromosome class.
+ - Added some error handling and messages for FileNotFound exceptions.
 */
 
 import java.io.File;
@@ -45,7 +46,8 @@ public class GeneticAlgorithm {
     // Variables:
     // Note: These variables are provided here for easy adjustments. For example,
     // this makes it easy to change to the included more_items.txt list and adjust
-    // variables to provide more useful results with that list.
+    // variables to provide more useful results with that list. maxWeight is used by
+    // the Chromosome.getFitness method.
     private static String filename = "items.txt"; // default: items.txt
     private static int populationSize = 10; // default: 10
     private static int generations = 20; // default: 20
@@ -65,37 +67,41 @@ public class GeneticAlgorithm {
         // Create an ArrayList of Items:
         ArrayList<Item> itemArray = new ArrayList<Item>();
 
-        // Create a File object that points to the filename:
-        File file = new File(filename);
+        // Try-catch block to handle FileNotFoundException:
+        try {
+            // Create a File object that points to the filename:
+            File file = new File(filename);
 
-        // TODO: Perhaps use a try-catch block to handle missing files and other exceptions?
+            // Create a Scanner object to read from the file:
+            Scanner fileScanner = new Scanner(file);
 
-        // Create a Scanner object to read from the file:
-        Scanner fileScanner = new Scanner(file);
+            // While there are lines to be read from the file:
+            while (fileScanner.hasNextLine()) {
+                // Grab the next line from the file:
+                String nextLine = fileScanner.nextLine();
 
-        // While there are lines to be read from the file:
-        while (fileScanner.hasNextLine()) {
-            // Grab the next line from the file:
-            String nextLine = fileScanner.nextLine();
+                // Note: I'm assuming the file is properly formatted.
 
-            // Note: I'm assuming the file is properly formatted.
+                // Split the string into a String Array, using commas as the seperator:
+                String[] splitString = nextLine.split(",");
 
-            // Split the string into a String Array, using commas as the seperator:
-            String[] splitString = nextLine.split(",");
+                // There's a possibility that the split String is not providing a valid input,
+                // such as a blank line at the end of the file.
 
-            // There's a possibility that the split String is not providing a valid input,
-            // such as a blank line at the end of the file.
-
-            // If the resulting String Array length is proper (to avoid errors):
-            if (splitString.length == 3) {
-                // Add the new item to the ArrayList:
-                itemArray.add(new Item(splitString[0].trim(), Double.parseDouble(splitString[1].trim()),
-                        Integer.parseInt(splitString[2].trim())));
+                // If the resulting String Array length is proper (to avoid errors):
+                if (splitString.length == 3) {
+                    // Add the new item to the ArrayList:
+                    itemArray.add(new Item(splitString[0].trim(), Double.parseDouble(splitString[1].trim()),
+                            Integer.parseInt(splitString[2].trim())));
+                }
             }
-        }
 
-        // Close the file Scanner:
-        fileScanner.close();
+            // Close the file Scanner:
+            fileScanner.close();
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
+        }
 
         // Return the new ArrayList:
         return itemArray;
@@ -128,6 +134,12 @@ public class GeneticAlgorithm {
 
         // Load the file's contents into an Item array:
         ArrayList<Item> itemArray = readData(filename);
+
+        // If the itemArray is empty, then the file likely wasn't loaded:
+        if (itemArray.size() == 0) {
+            System.out.println("Please ensure the necessary item file is available before trying again.");
+            return;
+        }
 
         // Step 1:
         // Create the initial population:
